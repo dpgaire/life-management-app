@@ -1,10 +1,18 @@
 const express = require("express");
+const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const expenseModel = require("../models/Expense");
 
-router.post("/", async (req, res) => {
+router.post("/",[
+  body("item", "Item is required").notEmpty(),
+  body("amount", "Amount is required").notEmpty(),
+], async (req, res) => {
   const { item, amount } = req.body;
   const userId = req.userId; // Get the user ID from the middleware
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const newExpense = await expenseModel.createExpense(item, amount,userId);
     res.status(201).json(newExpense);

@@ -45,7 +45,7 @@ const TaskComponent = () => {
   };
 
   const handleAddTask = async () => {
-    if (newTaskTitle.trim() === "") return;
+    // if (newTaskTitle.trim() === "") return;
 
     try {
       const response = await fetch("http://localhost:3001/api/tasks", {

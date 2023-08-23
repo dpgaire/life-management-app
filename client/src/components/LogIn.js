@@ -6,6 +6,7 @@ import {
   TextField,
   Button,
   Grid,
+  Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -16,12 +17,18 @@ function LogIn() {
     password: "",
   });
 
+  const [errors, setErrors] = useState([]);
+  const [errorMessage, setErrorMessage] = useState();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+    setErrors((prevErrors) =>
+      prevErrors?.filter((error) => error.path !== name)
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -37,16 +44,14 @@ function LogIn() {
         body: JSON.stringify(formData),
       });
 
-      if (response.status === 200) {
-        // Successful login, save token to local storage
-        const data = await response.json();
-        localStorage.setItem("token", data.token);
+      const data = await response.json();
 
-        // Redirect to dashboard or other page
+      if (response.status === 200) {
+        localStorage.setItem("token", data.token);
         navigate("/dashboard");
-      } else {
-        // Invalid credentials
-        console.error("Login failed");
+      } else if (response.status === 401) {
+        setErrors(data?.errors);
+        setErrorMessage(data?.error_message);
       }
     } catch (error) {
       console.error("Error during login:", error);
@@ -59,6 +64,11 @@ function LogIn() {
         <Typography variant="h6" align="center" gutterBottom>
           Log In
         </Typography>
+        {errorMessage && (
+          <Alert severity="error" style={{ marginBottom: "15px" }}>
+            {errorMessage}
+          </Alert>
+        )}
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -67,10 +77,21 @@ function LogIn() {
                 label="Email"
                 type="email"
                 fullWidth
-                required
+                // required
                 value={formData.email}
                 onChange={handleChange}
               />
+              {errors?.map(
+                (error) =>
+                  error.path === "email" && (
+                    <div
+                      key={error.msg}
+                      style={{ color: "red", padding: "5px 0" }}
+                    >
+                      {error.msg}
+                    </div>
+                  )
+              )}
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -78,10 +99,21 @@ function LogIn() {
                 label="Password"
                 type="password"
                 fullWidth
-                required
+                // required
                 value={formData.password}
                 onChange={handleChange}
               />
+              {errors?.map(
+                (error) =>
+                  error.path === "password" && (
+                    <div
+                      key={error.msg}
+                      style={{ color: "red", padding: "5px 0" }}
+                    >
+                      {error.msg}
+                    </div>
+                  )
+              )}
             </Grid>
           </Grid>
           <Button

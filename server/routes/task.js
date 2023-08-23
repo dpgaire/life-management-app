@@ -1,18 +1,34 @@
 const express = require("express");
+const { body, validationResult } = require("express-validator");
+
 const router = express.Router();
 const taskModel = require("../models/Task");
 
-router.post("/", async (req, res) => {
-  const { title, completed } = req.body;
-  const userId = req.userId; // Get the user ID from the middleware
 
-  try {
-    const newTask = await taskModel.createTask(title, completed, userId); // Pass the user ID to the model function
-    res.status(201).json(newTask);
-  } catch (error) {
-    res.status(500).json({ message: "Error creating task" });
+router.post(
+  "/",
+  [
+    body("title", "Title is required").notEmpty(),
+  ],
+  async (req, res) => {
+    const { title, completed } = req.body;
+    const userId = req.userId; // Get the user ID from the middleware
+
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const newTask = await taskModel.createTask(title, completed, userId); // Pass the user ID to the model function
+      res.status(201).json(newTask);
+    } catch (error) {
+      res.status(500).json({ error_message: "Error creating task" });
+    }
   }
-});
+);
+
 
 router.get("/", async (req, res) => {
   const user_id = req.userId; // Use the user ID from the token
@@ -20,7 +36,7 @@ router.get("/", async (req, res) => {
     const tasks = await taskModel.getTasks(user_id);
     res.status(200).json(tasks);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching tasks" });
+    res.status(500).json({ error_message: "Error fetching tasks" });
   }
 });
 
@@ -36,12 +52,12 @@ router.put("/:id", async (req, res) => {
       user_id
     );
     if (!updatedTask) {
-      res.status(404).json({ message: "Task not found" });
+      res.status(404).json({ error_message: "Task not found" });
     } else {
       res.status(200).json(updatedTask);
     }
   } catch (error) {
-    res.status(500).json({ message: "Error updating task" });
+    res.status(500).json({ error_message: "Error updating task" });
   }
 });
 
