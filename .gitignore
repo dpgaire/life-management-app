@@ -1,0 +1,28 @@
+# Ignore node_modules folder
+node_modules/
+
+# Ignore compiled or build files
+dist/
+build/
+
+# Ignore environment variables file (if applicable)
+.env
+
+# Ignore log files
+*.log
+
+# Ignore compiled executables
+*.exe
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore user-specific IDE or text editor configuration
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore user-uploaded or sensitive files
+uploads/
+secrets.json
