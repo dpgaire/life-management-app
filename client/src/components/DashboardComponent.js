@@ -74,13 +74,13 @@ const DashboardComponent = () => {
               <Typography variant="h5" component="div">
                 Tasks
               </Typography>
-              <List>
+              {/* <List>
                 {tasks?.map((task) => (
                   <ListItem key={task.id}>
                     <ListItemText primary={task?.title} />
                   </ListItem>
                 ))}
-              </List>
+              </List> */}
             </CardContent>
           </Card>
         </Grid>

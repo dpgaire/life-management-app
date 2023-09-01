@@ -4,12 +4,9 @@ const { body, validationResult } = require("express-validator");
 const router = express.Router();
 const taskModel = require("../models/Task");
 
-
 router.post(
   "/",
-  [
-    body("title", "Title is required").notEmpty(),
-  ],
+  [body("title", "Title is required").notEmpty()],
   async (req, res) => {
     const { title, completed } = req.body;
     const userId = req.userId; // Get the user ID from the middleware
@@ -29,12 +26,15 @@ router.post(
   }
 );
 
-
 router.get("/", async (req, res) => {
   const user_id = req.userId; // Use the user ID from the token
   try {
     const tasks = await taskModel.getTasks(user_id);
-    res.status(200).json(tasks);
+    if (tasks.length < 1) {
+      res.status(200).json({ tasks: [], message: "Tasks not found!" });
+    } else {
+      res.status(200).json({ tasks: tasks, message: null });
+    }
   } catch (error) {
     res.status(500).json({ error_message: "Error fetching tasks" });
   }

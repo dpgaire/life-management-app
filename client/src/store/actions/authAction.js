@@ -21,6 +21,5 @@ export const loginFailure = (error) => ({
 
 
 export const logoutUser = () => (dispatch) => {
-  localStorage.removeItem("token"); // Remove token from local storage
   dispatch({ type: LOGOUT });
 };

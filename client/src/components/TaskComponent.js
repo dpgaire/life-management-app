@@ -11,37 +11,28 @@ import {
   TableHead,
   TableRow,
   IconButton,
+  CircularProgress,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getTasks } from "../store/actions/taskAction";
 
 const TaskComponent = () => {
-  const [tasks, setTasks] = useState([]);
+  const dispatch = useDispatch();
+  // const [tasks, setTasks] = useState([]);
   const [editedTaskId, setEditedTaskId] = useState(null);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const token = useSelector((state) => state.auth.token); //
-
-
-  const fetchTasks = async () => {
-    try {
-      const response = await fetch("http://localhost:3002/api/tasks", {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-          userId: token,
-        },
-      });
-      const data = await response.json();
-      setTasks(data);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
+  const tasks = useSelector((state) => state.task.data);
+  const loading = useSelector((state) => state.task.loading);
+  const error = useSelector((state) => state.task.error);
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    dispatch(getTasks(token));
+  }, [dispatch, token]);
 
   const handleEditTask = (taskId) => {
     setEditedTaskId(taskId);
@@ -55,14 +46,14 @@ const TaskComponent = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token
+          Authorization: token,
         },
         body: JSON.stringify({ title: newTaskTitle }),
       });
 
       if (response.status === 201) {
         setNewTaskTitle("");
-        fetchTasks();
+        // fetchTasks();
       } else {
         console.error("Error adding task");
       }
@@ -81,14 +72,14 @@ const TaskComponent = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token
+          Authorization: token,
         },
         body: JSON.stringify(editedTask),
       });
 
       if (response.status === 200) {
         setEditedTaskId(null);
-        fetchTasks();
+        // fetchTasks();
       } else {
         console.error("Error updating task");
       }
@@ -102,12 +93,12 @@ const TaskComponent = () => {
       const response = await fetch(`http://localhost:3002/api/tasks/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: token
+          Authorization: token,
         },
       });
 
       if (response.status === 204) {
-        fetchTasks();
+        // fetchTasks();
       } else {
         console.error("Error deleting task");
       }
@@ -122,6 +113,11 @@ const TaskComponent = () => {
         <Typography variant="h6" align="center" gutterBottom>
           Task Management
         </Typography>
+        {error && (
+          <Alert severity="error" style={{marginBottom:'10px'}}>
+            <AlertTitle> {error}</AlertTitle>
+          </Alert>
+        )}
         <TextField
           label="Task"
           fullWidth
@@ -137,59 +133,77 @@ const TaskComponent = () => {
         >
           Add Task
         </Button>
+
         <TableContainer component={Paper} style={{ marginTop: "20px" }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Tasks</TableCell>
-                <TableCell>Edit</TableCell>
-                <TableCell>Delete</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tasks.map((task) => (
-                <TableRow key={task.id}>
-                  <TableCell>
-                    {editedTaskId === task.id ? (
-                      <TextField
-                        value={task.title}
-                        onChange={(e) =>
-                          setTasks((prevTasks) =>
-                            prevTasks.map((prevTask) =>
-                              prevTask.id === task.id
-                                ? { ...prevTask, title: e.target.value }
-                                : prevTask
-                            )
-                          )
-                        }
-                      />
-                    ) : (
-                      task.title
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {editedTaskId === task.id ? (
-                      <Button
-                        onClick={() => handleUpdateTask(task.id)}
-                        color="primary"
-                      >
-                        Save
-                      </Button>
-                    ) : (
-                      <IconButton onClick={() => handleEditTask(task.id)}>
-                        <EditIcon />
-                      </IconButton>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleDeleteTask(task.id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "20px" }}>
+              <CircularProgress />
+            </div>
+          ) : (
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Tasks</TableCell>
+                  <TableCell>Edit</TableCell>
+                  <TableCell>Delete</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+
+              {tasks?.length > 1 ? (
+                tasks?.map((task) => (
+                  <TableBody key={task.id}>
+                    <TableRow>
+                      <TableCell>
+                        {editedTaskId === task.id ? (
+                          <TextField
+                            value={task.title}
+                            // onChange={(e) =>
+                            //   setTasks((prevTasks) =>
+                            //     prevTasks.map((prevTask) =>
+                            //       prevTask.id === task.id
+                            //         ? { ...prevTask, title: e.target.value }
+                            //         : prevTask
+                            //     )
+                            //   )
+                            // }
+                          />
+                        ) : (
+                          task.title
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {editedTaskId === task.id ? (
+                          <Button
+                            onClick={() => handleUpdateTask(task.id)}
+                            color="primary"
+                          >
+                            Save
+                          </Button>
+                        ) : (
+                          <IconButton onClick={() => handleEditTask(task.id)}>
+                            <EditIcon />
+                          </IconButton>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => handleDeleteTask(task.id)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                ))
+              ) : (
+                <TableBody>
+                  <TableRow>
+                    <TableCell style={{ textAlign: "center", width: "100%" }}>
+                      No record found!
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              )}
+            </Table>
+          )}
         </TableContainer>
       </Paper>
     </div>
