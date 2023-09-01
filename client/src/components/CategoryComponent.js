@@ -14,8 +14,10 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useSelector } from "react-redux";
 
 const CategoryComponent = () => {
+  const token = useSelector((state) => state.auth.token); //
   const [categories, setCategories] = useState([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [editedCategoryId, setEditedCategoryId] = useState(null);
@@ -23,9 +25,9 @@ const CategoryComponent = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/categories", {
+      const response = await fetch("http://localhost:3002/api/categories", {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token
         },
       });
       const data = await response.json();
@@ -41,11 +43,11 @@ const CategoryComponent = () => {
 
   const handleAddCategory = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/categories", {
+      const response = await fetch("http://localhost:3002/api/categories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+          Authorization: token
         },
         body: JSON.stringify({
           name: newCategoryName,
@@ -71,12 +73,12 @@ const CategoryComponent = () => {
   const handleUpdateCategory = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/categories/${editedCategoryId}`,
+        `http://localhost:3002/api/categories/${editedCategoryId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: localStorage.getItem("token"),
+            Authorization: token
           },
           body: JSON.stringify({
             name: editedCategoryName,
@@ -99,11 +101,11 @@ const CategoryComponent = () => {
   const handleDeleteCategory = async (categoryId) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/categories/${categoryId}`,
+        `http://localhost:3002/api/categories/${categoryId}`,
         {
           method: "DELETE",
           headers: {
-            Authorization: localStorage.getItem("token"),
+            Authorization: token
           },
         }
       );

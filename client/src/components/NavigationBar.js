@@ -1,11 +1,14 @@
 import React from "react";
 import { AppBar, Typography, Button, Grid } from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginSuccess } from "../store/actions/authAction";
 
 function NavigationBar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token"); // Get the token from local storage
+  const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
 
   const isDashboard = location.pathname === "/dashboard";
   const isTask = location.pathname === "/tasks";
@@ -14,9 +17,7 @@ function NavigationBar() {
   const isCategories = location.pathname === "/categories";
 
   const handleLogout = () => {
-    // Clear the token from local storage
-    localStorage.removeItem("token");
-    // Then navigate to the home page
+    dispatch(loginSuccess({}));
     navigate("/");
   };
 
@@ -29,7 +30,8 @@ function NavigationBar() {
         alignItems="center"
       >
         <Grid item>
-          {token && (isDashboard || isTask || isCategories || isExpenses || isNote) ? (
+          {token &&
+          (isDashboard || isTask || isCategories || isExpenses || isNote) ? (
             <Typography variant="h6" component="div">
               <Button component={Link} to="/dashboard" color="inherit">
                 Dashboard

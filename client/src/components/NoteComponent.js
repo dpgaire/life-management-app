@@ -14,8 +14,10 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useSelector } from "react-redux";
 
 const NoteComponent = () => {
+  const token = useSelector((state) => state.auth.token); //
   const [notes, setNotes] = useState([]);
   const [editedNote, setEditedNote] = useState({
     id: null,
@@ -25,9 +27,9 @@ const NoteComponent = () => {
 
   const fetchNotes = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/notes", {
+      const response = await fetch("http://localhost:3002/api/notes", {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
           "Content-Type": "application/json",
         },
       });
@@ -52,11 +54,11 @@ const NoteComponent = () => {
 
   const handleAddNote = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/notes", {
+      const response = await fetch("http://localhost:3002/api/notes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
         },
         body: JSON.stringify({
           title: editedNote.title,
@@ -83,11 +85,11 @@ const NoteComponent = () => {
     if (!editedNote.title.trim()) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/notes/${id}`, {
+      const response = await fetch(`http://localhost:3002/api/notes/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+          Authorization:token,
         },
         body: JSON.stringify({
           title: editedNote.title,
@@ -112,10 +114,10 @@ const NoteComponent = () => {
 
   const handleDeleteNote = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/notes/${id}`, {
+      const response = await fetch(`http://localhost:3002/api/notes/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
         },
       });
 

@@ -36,7 +36,7 @@ function SignUp() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3001/api/users/signup", {
+      const response = await fetch("http://localhost:3002/api/users/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

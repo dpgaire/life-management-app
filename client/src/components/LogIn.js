@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Paper,
@@ -9,16 +9,24 @@ import {
   Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../store/thunks/authThunk";
 
 function LogIn() {
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.auth.loading);
+  const error = useSelector((state) => state.auth.error);
+  const token = useSelector((state) => state.auth.token); //
+
+  console.log("token", token);
+  console.log("error", error);
+  console.log("loading", loading);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
-  const [errors, setErrors] = useState([]);
-  const [errorMessage, setErrorMessage] = useState();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,37 +34,40 @@ function LogIn() {
       ...prevData,
       [name]: value,
     }));
-    setErrors((prevErrors) =>
-      prevErrors?.filter((error) => error.path !== name)
-    );
+    // if (name === "email" || name === "password") {
+    //   // Clear validation errors for the specific input field
+    //   setValidationErrors(
+    //     validationerrors.filter((error) => error.path !== name)
+    //   );
+    //   // setErrorMessage(null);
+    // }
+
+    // setErrors((prevErrors) =>
+    //   prevErrors?.filter((error) => error.path !== name)
+    // );
   };
 
-  const handleSubmit = async (e) => {
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   postData();
+  //   if (!loading && !errorMessage && !validationerrors) {
+  //     navigate("/dashboard");
+  //     localStorage.setItem("token", responseData.token);
+  //   }
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Send login data to the backend
-    try {
-      const response = await fetch("http://localhost:3001/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.status === 200) {
-        localStorage.setItem("token", data.token);
-        navigate("/dashboard");
-      } else if (response.status === 401) {
-        setErrors(data?.errors);
-        setErrorMessage(data?.error_message);
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-    }
+    // if (token) {
+    //   navigate("/dashboard");
+    // }
+    dispatch(loginUser(formData));
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [navigate, dispatch, token]);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -64,9 +75,9 @@ function LogIn() {
         <Typography variant="h6" align="center" gutterBottom>
           Log In
         </Typography>
-        {errorMessage && (
+        {error && (
           <Alert severity="error" style={{ marginBottom: "15px" }}>
-            {errorMessage}
+            {error}
           </Alert>
         )}
         <form onSubmit={handleSubmit}>
@@ -81,7 +92,7 @@ function LogIn() {
                 value={formData.email}
                 onChange={handleChange}
               />
-              {errors?.map(
+              {/* {validationerrors?.map(
                 (error) =>
                   error.path === "email" && (
                     <div
@@ -91,7 +102,7 @@ function LogIn() {
                       {error.msg}
                     </div>
                   )
-              )}
+              )} */}
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -103,7 +114,7 @@ function LogIn() {
                 value={formData.password}
                 onChange={handleChange}
               />
-              {errors?.map(
+              {/* {validationerrors?.map(
                 (error) =>
                   error.path === "password" && (
                     <div
@@ -113,7 +124,7 @@ function LogIn() {
                       {error.msg}
                     </div>
                   )
-              )}
+              )} */}
             </Grid>
           </Grid>
           <Button
@@ -123,7 +134,7 @@ function LogIn() {
             fullWidth
             style={{ marginTop: "20px" }}
           >
-            Log In
+            {loading ? "Logging In..." : "Log In"}
           </Button>
         </form>
       </Paper>

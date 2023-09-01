@@ -14,8 +14,10 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useSelector } from "react-redux";
 
 const ExpenseComponent = () => {
+  const token = useSelector((state) => state.auth.token); //
   const [expenses, setExpenses] = useState([]);
   const [editedExpenseItem, setEditedExpenseItem] = useState();
   const [editedExpenseAmount, setEditedExpenseAmount] = useState();
@@ -25,11 +27,11 @@ const ExpenseComponent = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/expenses", {
+      const response = await fetch("http://localhost:3002/api/expenses", {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
           "Content-Type": "application/json",
-          userId: localStorage.getItem("token"),
+          userId: token,
         },
       });
       const data = await response.json();
@@ -43,14 +45,13 @@ const ExpenseComponent = () => {
     fetchExpenses();
   }, []);
 
-
   const handleAddExpense = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/expenses", {
+      const response = await fetch("http://localhost:3002/api/expenses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
         },
         body: JSON.stringify({
           item: newExpenseItem,
@@ -74,11 +75,11 @@ const ExpenseComponent = () => {
     if (!editedExpenseItem.trim()) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/expenses/${id}`, {
+      const response = await fetch(`http://localhost:3002/api/expenses/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
         },
         body: JSON.stringify({
           item: editedExpenseItem, // Use editedExpenseItem instead of editedExpense
@@ -101,10 +102,10 @@ const ExpenseComponent = () => {
 
   const handleDeleteExpense = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/expenses/${id}`, {
+      const response = await fetch(`http://localhost:3002/api/expenses/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
         },
       });
 

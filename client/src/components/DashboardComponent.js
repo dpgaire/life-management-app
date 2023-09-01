@@ -8,44 +8,55 @@ import {
   Grid,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import {  useNavigate } from "react-router-dom";
 
 const DashboardComponent = () => {
   const [tasks, setTasks] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [notes, setNotes] = useState([]);
   const [categories, setCategories] = useState([]);
+  const token = useSelector((state) => state.auth.token);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
-    const headers = {
-      Authorization: localStorage.getItem("token"),
-      "Content-Type": "application/json",
-    };
-  
-    // Fetch tasks data
-    fetch("http://localhost:3001/api/tasks", { headers })
-      .then((response) => response.json())
-      .then((data) => setTasks(data))
-      .catch((error) => console.error("Error fetching tasks:", error));
-  
-    // Fetch expenses data
-    fetch("http://localhost:3001/api/expenses", { headers })
-      .then((response) => response.json())
-      .then((data) => setExpenses(data))
-      .catch((error) => console.error("Error fetching expenses:", error));
-  
-    // Fetch notes data
-    fetch("http://localhost:3001/api/notes", { headers })
-      .then((response) => response.json())
-      .then((data) => setNotes(data))
-      .catch((error) => console.error("Error fetching notes:", error));
-  
-    // Fetch categories data
-    fetch("http://localhost:3001/api/categories", { headers })
-      .then((response) => response.json())
-      .then((data) => setCategories(data))
-      .catch((error) => console.error("Error fetching categories:", error));
-  }, []);
-  
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
+  useEffect(() => {
+    if (token) {
+      const headers = {
+        Authorization: token,
+        "Content-Type": "application/json",
+      };
+      // Fetch tasks data
+      fetch("http://localhost:3002/api/tasks", { headers })
+        .then((response) => response.json())
+        .then((data) => setTasks(data))
+        .catch((error) => console.error("Error fetching tasks:", error));
+
+      // Fetch expenses data
+      fetch("http://localhost:3002/api/expenses", { headers })
+        .then((response) => response.json())
+        .then((data) => setExpenses(data))
+        .catch((error) => console.error("Error fetching expenses:", error));
+
+      // Fetch notes data
+      fetch("http://localhost:3002/api/notes", { headers })
+        .then((response) => response.json())
+        .then((data) => setNotes(data))
+        .catch((error) => console.error("Error fetching notes:", error));
+
+      // Fetch categories data
+      fetch("http://localhost:3002/api/categories", { headers })
+        .then((response) => response.json())
+        .then((data) => setCategories(data))
+        .catch((error) => console.error("Error fetching categories:", error));
+    }
+  }, [token]);
 
   return (
     <div>
@@ -101,7 +112,7 @@ const DashboardComponent = () => {
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <Card sx={{ minWidth: 275, marginBottom: 5}}>
+          <Card sx={{ minWidth: 275, marginBottom: 5 }}>
             <CardContent>
               <Typography
                 sx={{ fontSize: 14 }}

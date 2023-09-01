@@ -14,19 +14,22 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useSelector } from "react-redux";
 
 const TaskComponent = () => {
   const [tasks, setTasks] = useState([]);
   const [editedTaskId, setEditedTaskId] = useState(null);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const token = useSelector((state) => state.auth.token); //
+
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/tasks", {
+      const response = await fetch("http://localhost:3002/api/tasks", {
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token,
           "Content-Type": "application/json",
-          userId: localStorage.getItem("token"),
+          userId: token,
         },
       });
       const data = await response.json();
@@ -48,11 +51,11 @@ const TaskComponent = () => {
     // if (newTaskTitle.trim() === "") return;
 
     try {
-      const response = await fetch("http://localhost:3001/api/tasks", {
+      const response = await fetch("http://localhost:3002/api/tasks", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+          Authorization: token
         },
         body: JSON.stringify({ title: newTaskTitle }),
       });
@@ -74,11 +77,11 @@ const TaskComponent = () => {
     const editedTask = tasks.find((task) => task.id === editedTaskId);
 
     try {
-      const response = await fetch(`http://localhost:3001/api/tasks/${id}`, {
+      const response = await fetch(`http://localhost:3002/api/tasks/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+          Authorization: token
         },
         body: JSON.stringify(editedTask),
       });
@@ -96,10 +99,10 @@ const TaskComponent = () => {
 
   const handleDeleteTask = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/tasks/${id}`, {
+      const response = await fetch(`http://localhost:3002/api/tasks/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: token
         },
       });
 
