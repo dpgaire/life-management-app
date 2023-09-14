@@ -15,9 +15,12 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const CategoryComponent = () => {
   const token = useSelector((state) => state.auth.token); //
+  const navigate = useNavigate();
+
   const [categories, setCategories] = useState([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [editedCategoryId, setEditedCategoryId] = useState(null);
@@ -36,6 +39,12 @@ const CategoryComponent = () => {
       console.error("Error fetching categories:", error);
     }
   };
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate, token]);
 
   useEffect(() => {
     fetchCategories();

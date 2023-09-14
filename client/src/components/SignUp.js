@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Paper,
@@ -9,9 +9,12 @@ import {
   Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function SignUp() {
   const navigate = useNavigate();
+  const token = useSelector((state) => state.auth.token);
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -57,6 +60,12 @@ function SignUp() {
       console.error("Error during signup:", error);
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [navigate, token]);
 
   return (
     <Container component="main" maxWidth="xs">

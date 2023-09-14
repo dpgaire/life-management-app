@@ -20,11 +20,6 @@ const DashboardComponent = () => {
   const navigate = useNavigate();
 
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    }
-  }, [token, navigate]);
 
   useEffect(() => {
     if (token) {

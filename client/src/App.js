@@ -1,12 +1,10 @@
-import React from "react";
-import { Paper } from "@mui/material";
+import React, { useEffect } from "react";
+import { Container, Paper } from "@mui/material";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
 } from "react-router-dom";
-import NavigationBar from "./components/NavigationBar";
 import {
   Categories,
   Expenses,
@@ -17,33 +15,17 @@ import {
   Home,
   Dashboard,
 } from "./pages";
-import { useSelector } from "react-redux";
-import PrivateRoute from "./components/PrivateRoute";
-import { PublicRoute } from "./routes/routes";
+import NotFound from "./components/NotFound";
+import Auth from "./components/Auth/Auth";
+import Navbar from "./components/Navbar";
 
 function App() {
-  // function PrivateRoute(props) {
-  const isAuthenticated = useSelector((state) => state.auth.token);
-  //   console.log("isAuthenticated", isAuthenticated);
-  //   return isAuthenticated ? (
-  //     // <Routes>
-  //     <Route {...props} />
-  //   ) : (
-  //     // </Routes>
-  //     <Navigate to="/login" />
-  //   );
-  // }
+  const user = null;
   return (
-    <Paper elevation={3} style={{ padding: "20px", height: "auto" }}>
-      <Router>
-        <NavigationBar />
+    <Router>
+      <Container maxWidth="xl">
+        <Navbar />
         <Routes>
-          {/* <PublicRoute
-            path="/"
-            element={<Home />}
-            isAuthenticated={isAuthenticated}
-          /> */}
-
           <Route exact path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -52,9 +34,11 @@ function App() {
           <Route path="/notes" element={<Notes />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/categories" element={<Categories />} />
+          <Route path="/auth" exact element={<Auth />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
-      </Router>
-    </Paper>
+      </Container>
+    </Router>
   );
 }
 

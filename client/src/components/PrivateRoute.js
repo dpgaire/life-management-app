@@ -1,17 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Navigate, Route } from "react-router-dom";
-
+import {  useNavigate } from "react-router-dom";
 const PrivateRoute = (props) => {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isAuthenticated = useSelector((state) => state.auth.token);
-  console.log("isAuthenticated", isAuthenticated);
-  return isAuthenticated ? (
-    // <Routes>
-    <Route {...props} />
-  ) : (
-    // </Routes>
-    <Navigate to="/login" />
-  );
-};
 
+  const checkUserToken = () => {
+    if (!isAuthenticated || isAuthenticated === "undefined") {
+      setIsLoggedIn(false);
+      return navigate("/login");
+    }
+    setIsLoggedIn(true);
+  };
+  useEffect(() => {
+    checkUserToken();
+  }, [isAuthenticated]);
+  return <React.Fragment>{isLoggedIn ? props.children : null}</React.Fragment>;
+};
 export default PrivateRoute;

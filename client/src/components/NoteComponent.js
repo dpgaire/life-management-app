@@ -15,15 +15,20 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const NoteComponent = () => {
   const token = useSelector((state) => state.auth.token); //
+  const navigate = useNavigate();
   const [notes, setNotes] = useState([]);
   const [editedNote, setEditedNote] = useState({
     id: null,
     title: "",
     content: "",
   });
+
+
+  
 
   const fetchNotes = async () => {
     try {
@@ -174,7 +179,7 @@ const NoteComponent = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {notes.map((note) => (
+              {notes?.map((note) => (
                 <TableRow key={note.id}>
                   <TableCell>
                     {editedNote.id === note.id ? (

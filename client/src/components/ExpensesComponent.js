@@ -15,9 +15,14 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import { useGetExpensesQuery } from "../app/services/expenseApi";
 
 const ExpenseComponent = () => {
-  const token = useSelector((state) => state.auth.token); //
+  useAuth();
+  // const token = useSelector((state) => state.auth.token); //
+  const navigate = useNavigate();
   const [expenses, setExpenses] = useState([]);
   const [editedExpenseItem, setEditedExpenseItem] = useState();
   const [editedExpenseAmount, setEditedExpenseAmount] = useState();
@@ -25,25 +30,41 @@ const ExpenseComponent = () => {
   const [newExpenseItem, setNewExpenseItem] = useState("");
   const [newExpenseAmount, setNewExpenseAmount] = useState("");
 
-  const fetchExpenses = async () => {
-    try {
-      const response = await fetch("http://localhost:3002/api/expenses", {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-          userId: token,
-        },
-      });
-      const data = await response.json();
-      setExpenses(data);
-    } catch (error) {
-      console.error("Error fetching expenses:", error);
-    }
-  };
+  const token_storage = localStorage.getItem("token");
 
-  useEffect(() => {
-    fetchExpenses();
-  }, []);
+  const { data: expensesData, isLoading, isError } = useGetExpensesQuery(undefined, {
+    // Pass the token as a header in the request
+    headers: {
+      Authorization: token_storage,
+    },
+  });
+
+  console.log('VexpensesData',expensesData)
+
+  // const fetchExpenses = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:3002/api/expenses", {
+  //       headers: {
+  //         Authorization: token_storage,
+  //         "Content-Type": "application/json",
+  //         userId: token_storage,
+  //       },
+  //     });
+  //     const data = await response.json();
+  //     setExpenses(data);
+  //   } catch (error) {
+  //     console.error("Error fetching expenses:", error);
+  //   }
+  // };
+
+
+  // useEffect(() => {
+
+  // }, [navigate, token]);
+
+  // useEffect(() => {
+  //   fetchExpenses();
+  // }, []);
 
   const handleAddExpense = async () => {
     try {
@@ -51,7 +72,7 @@ const ExpenseComponent = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token,
+          // Authorization: token_storage,
         },
         body: JSON.stringify({
           item: newExpenseItem,
@@ -62,7 +83,7 @@ const ExpenseComponent = () => {
       if (response.status === 201) {
         setNewExpenseItem("");
         setNewExpenseAmount("");
-        fetchExpenses();
+        // fetchExpenses();
       } else {
         console.error("Error adding expense");
       }
@@ -79,7 +100,7 @@ const ExpenseComponent = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token,
+          // Authorization: token_storage,
         },
         body: JSON.stringify({
           item: editedExpenseItem, // Use editedExpenseItem instead of editedExpense
@@ -88,7 +109,7 @@ const ExpenseComponent = () => {
       });
 
       if (response.status === 200) {
-        fetchExpenses();
+        // fetchExpenses();
         setEditedExpenseAmount("");
         setEditedExpenseItem(""); // Clear the edited expense item
         setEditedExpenseId(null);
@@ -104,13 +125,13 @@ const ExpenseComponent = () => {
     try {
       const response = await fetch(`http://localhost:3002/api/expenses/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: token,
-        },
+        // headers: {
+        //   Authorization: token,
+        // },
       });
 
       if (response.status === 204) {
-        fetchExpenses();
+        // fetchExpenses();
       } else {
         console.error("Error deleting expense");
       }
@@ -164,7 +185,7 @@ const ExpenseComponent = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {expenses.map((expense) => (
+              {expenses?.map((expense) => (
                 <TableRow key={expense.id}>
                   <TableCell>
                     {editedExpenseId === expense.id ? (

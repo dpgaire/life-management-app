@@ -19,6 +19,7 @@ export const loginUser = (credentials) => async (dispatch) => {
     if (response.status === 200) {
       const { user, token } = data;
       dispatch(loginSuccess(user, token));
+      localStorage.setItem('token', token);
     } else {
       dispatch(loginFailure(data?.error_message));
     }

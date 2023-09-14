@@ -1,10 +1,19 @@
-// taskTypes.js
-// export const GET_TASKS = 'GET_TASKS';
+//Get tasks
 export const TASKS_LIST_REQUEST = "TASKS_LIST_REQUEST";
 export const TASKS_LIST_SUCCESS = "TASKS_LIST_SUCCESS";
 export const TASKS_LIST_FAIL = "TASKS_LIST_FAIL";
-export const GET_TASKS = 'GET_TASKS';
 
-export const ADD_TASK = 'ADD_TASK';
-export const UPDATE_TASK = 'UPDATE_TASK';
-export const DELETE_TASK = 'DELETE_TASK';
+//Add Tasks
+export const ADD_TASK_REQUEST = "ADD_TASK_REQUEST";
+export const ADD_TASK_SUCCESS = "ADD_TASK_SUCCESS";
+export const ADD_TASK_FAIL = "ADD_TASK_FAIL";
+
+//Update Tasks
+export const UPDATE_TASK_REQUEST = "UPDATE_TASK_REQUEST";
+export const UPDATE_TASK_SUCCESS = "UPDATE_TASK_SUCCESS";
+export const UPDATE_TASK_FAIL = "UPDATE_TASK_FAIL";
+
+//Delete Tasks
+export const DELETE_TASK_REQUEST = "DELETE_TASK_REQUEST";
+export const DELETE_TASK_SUCCESS = "DELETE_TASK_SUCCESS";
+export const DELETE_TASK_FAIL = "DELETE_TASK_FAIL";
