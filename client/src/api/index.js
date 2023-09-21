@@ -1,24 +1,33 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API = axios.create({ baseURL: 'http://localhost:3002/api' });
+const API = axios.create({ baseURL: "http://localhost:3002/api" });
+
+// Function to get user profile from local storage
+const getUserProfile = () => {
+  const profile = localStorage.getItem("profile");
+  return profile ? JSON.parse(profile) : null;
+};
 
 API.interceptors.request.use((req) => {
-  if (localStorage.getItem('profile')) {
-    req.headers.Authorization = `Bearer ${JSON.parse(localStorage.getItem('profile')).token}`;
-  }
-
+  req.headers.authorization=`Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY5NTEwMzY5OSwiZXhwIjoxNjk1MTA3Mjk5fQ.9sBe7XEKl6Ew6dSH806ZU2lq-lERIamKUS9SQXzicuc`
+  // const userProfile = getUserProfile();
+  // if (userProfile && userProfile.token) {
+  //   req.headers.authorization = `Bearer ${userProfile.token}`;
+  // }
+  // console.log("Request with Authorization:", req);
   return req;
 });
+// Axios request error handler
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Axios request error:", error);
+    throw error; // Rethrow the error to be caught by the calling code
+  }
+);
+// Function to get user profile from local storage
 
-// export const fetchPost = (id) => API.get(`/posts/${id}`);
-// export const fetchPosts = (page) => API.get(`/posts?page=${page}`);
-// export const fetchPostsByCreator = (name) => API.get(`/posts/creator?name=${name}`);
-// export const fetchPostsBySearch = (searchQuery) => API.get(`/posts/search?searchQuery=${searchQuery.search || 'none'}&tags=${searchQuery.tags}`);
-// export const createPost = (newPost) => API.post('/posts', newPost);
-// export const likePost = (id) => API.patch(`/posts/${id}/likePost`);
-// export const comment = (value, id) => API.post(`/posts/${id}/commentPost`, { value });
-// export const updatePost = (id, updatedPost) => API.patch(`/posts/${id}`, updatedPost);
-// export const deletePost = (id) => API.delete(`/posts/${id}`);
+export const fetchNotes = () => API.get(`/notes`);
 
-export const signIn = (formData) => API.post('/users/login', formData);
-export const signUp = (formData) => API.post('/users/signup', formData);
+export const signIn = (formData) => API.post("/users/login", formData);
+export const signUp = (formData) => API.post("/users/signup", formData);

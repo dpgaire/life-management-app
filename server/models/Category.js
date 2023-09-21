@@ -16,7 +16,7 @@ class CategoryModel {
   async getCategories(user_id) {
     try {
       const result = await pool.query(
-        "SELECT * FROM categories WHERE user_id = $1",
+        "SELECT * FROM categories WHERE user_id = $1 ORDER BY created_at DESC",
         [user_id]
       );
       return result.rows;
@@ -24,7 +24,6 @@ class CategoryModel {
       throw error;
     }
   }
-
   async updateCategory(id, name, user_id) {
     try {
       const result = await pool.query(
@@ -49,4 +48,5 @@ class CategoryModel {
     }
   }
 }
+
 module.exports = new CategoryModel();

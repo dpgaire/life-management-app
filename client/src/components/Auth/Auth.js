@@ -49,7 +49,8 @@ function LogIn() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isSignup) {
-      dispatch(signup(form, navigate));
+      dispatch(signup(form, navigate,setIsSignup));
+      setForm(initialState)
     } else {
       dispatch(signin(form, navigate));
     }

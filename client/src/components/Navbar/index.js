@@ -4,9 +4,12 @@ import {
   AppBar,
   Avatar,
   Button,
+  Drawer,
   IconButton,
-  Menu,
-  MenuItem,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -23,15 +26,15 @@ const customStyles = {
     justifyContent: "space-between",
     alignItems: "center",
     padding: "10px 50px",
-    "@media (max-width:600px)": {
+    "@media (maxWidth:600px)": {
       flexDirection: "column",
     },
   },
   brandContainer: {
     display: "flex",
     alignItems: "center",
-    textDecoration: "none", // Remove underlines from links
-    color: "#333", // You can specify your own color
+    textDecoration: "none",
+    color: "#333",
     fontSize: "2em",
     fontWeight: 300,
   },
@@ -43,18 +46,16 @@ const customStyles = {
     display: "flex",
     justifyContent: "flex-end",
     width: "400px",
-    "@media (max-width:600px)": {
+    "@media (maxWidth:600px)": {
       width: "auto",
     },
   },
   profile: {
     display: "flex",
     justifyContent: "space-between",
-    // width: "300px",
-    // position:'relative',
     gap: "10px",
     alignItems: "center",
-    "@media (max-width:600px)": {
+    "@media (maxWidth:600px)": {
       width: "auto",
       marginTop: "20px",
       justifyContent: "center",
@@ -66,36 +67,43 @@ const customStyles = {
     textAlign: "center",
   },
   purple: {
-    color: "#fff", // You can specify your own color
+    color: "#fff",
     backgroundColor: "#1976D2",
+  },
+  drawerPaper: {
+    backgroundColor: "#1976D2",
+    color: "#fff",
+  },
+  drawerList: {
+    width:280,
+    paddingTop: "20px",
+  },
+  drawerItem: {
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "#1565C0",
+    },
   },
 };
 
 function Navbar() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // State to control the menu
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State to control the drawer menu
 
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-    setIsMenuOpen(true); // Open the menu
+  const toggleDrawer = (open) => () => {
+    setIsDrawerOpen(open);
   };
-
-  const handleMenuClose = useCallback(() => {
-    setAnchorEl(null);
-    setIsMenuOpen(false); // Close the menu
-  }, []);
 
   const logout = useCallback(() => {
     dispatch({ type: actionType.LOGOUT });
     navigate("/auth");
     setUser(null);
-    handleMenuClose();
-  }, [dispatch, navigate, handleMenuClose]);
+    setIsDrawerOpen(false);
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     const token = user?.token;
@@ -108,63 +116,106 @@ function Navbar() {
   }, [location, user?.token, logout]);
 
   return (
-    <AppBar style={customStyles.appBar} position="static" color="inherit">
-      <Link to="/" style={customStyles.brandContainer}>
-        <Typography variant="h6" component="div">
-          <Avatar
-            style={{ padding: "10px", borderRadius: "10px" }}
-            variant="square"
-            sx={{ bgcolor: "#1976D2" }}
-          >
-            LMA
-          </Avatar>
-        </Typography>
-      </Link>
-      <Toolbar style={customStyles.toolbar}>
-        {user?.user ? (
-          <div className={customStyles.profile}>
-            <Button  component={Link} to="/tasks" color="primary">
-              Tasks
-            </Button>
-            <Button component={Link} to="/notes" color="primary">
-              Notes
-            </Button>
-            <Button component={Link} to="/expenses" color="primary">
-              Expenses
-            </Button>
-            <Button component={Link} to="/categories" color="primary">
-              Categories
-            </Button>
-            <IconButton onClick={handleMenuOpen}>
+    <>
+      <AppBar style={customStyles.appBar} position="static" color="inherit">
+        <Link to="/" style={customStyles.brandContainer}>
+          <Typography variant="h6" component="div">
+            <Avatar
+              style={{
+                padding: "0 5px",
+                marginLeft: "10px",
+                borderRadius: "10px",
+              }}
+              variant="square"
+              sx={{ bgcolor: "#1976D2" }}
+            >
+              LMA
+            </Avatar>
+          </Typography>
+        </Link>
+        <Toolbar style={customStyles.toolbar}>
+          {user?.user ? (
+            <IconButton
+              onClick={toggleDrawer(true)}
+              color="inherit"
+              aria-label="open drawer"
+              edge="end"
+            >
               <Avatar style={customStyles.purple} alt={user?.user.username}>
-                {/* {user?.user.user.username} */}HA
+                {user
+                  ? user.user.name
+                      .split(" ")
+                      .map((word, index) =>
+                        index === 0 || index === 1 ? word[0] : ""
+                      )
+                      .join("")
+                  : ""}
               </Avatar>
             </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={isMenuOpen}
-              onClose={handleMenuClose}
+          ) : (
+            <Button
+              component={Link}
+              to="/auth"
+              variant="contained"
+              color="primary"
             >
-              <MenuItem>
-                <Button>Settings</Button>
-              </MenuItem>
-              <MenuItem onClick={logout}>
-                <Button>Logout</Button>
-              </MenuItem>
-            </Menu>
-          </div>
-        ) : (
-          <Button
+              Log In
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+
+      <Drawer
+        anchor="right"
+        open={isDrawerOpen}
+        onClose={toggleDrawer(false)}
+        classes={{
+          paper: customStyles.drawerPaper,
+        }}
+      >
+        <List style={customStyles.drawerList}>
+          <ListItem
+            button
             component={Link}
-            to="/auth"
-            variant="contained"
-            color="primary"
+            to="/tasks"
+            style={customStyles.drawerItem}
           >
-            Log In
-          </Button>
-        )}
-      </Toolbar>
-    </AppBar>
+            <ListItemText primary="Tasks" />
+          </ListItem>
+          <ListItem
+            button
+            component={Link}
+            to="/notes"
+            style={customStyles.drawerItem}
+          >
+            <ListItemText primary="Notes" />
+          </ListItem>
+          <ListItem
+            button
+            component={Link}
+            to="/expenses"
+            style={customStyles.drawerItem}
+          >
+            <ListItemText primary="Expenses" />
+          </ListItem>
+          <ListItem
+            button
+            component={Link}
+            to="/categories"
+            style={customStyles.drawerItem}
+          >
+            <ListItemText primary="Categories" />
+          </ListItem>
+          <ListItem
+            button
+            onClick={logout}
+            style={customStyles.drawerItem}
+          >
+            <ListItemText primary="Logout" />
+          </ListItem>
+        </List>
+      </Drawer>
+    </>
   );
 }
 

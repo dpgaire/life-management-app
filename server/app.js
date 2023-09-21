@@ -22,6 +22,10 @@ app.use("/api/notes", verifyToken, notesRoutes);
 app.use("/api/expenses", verifyToken, expenseRoutes);
 app.use("/api/categories", verifyToken, categoryRoutes);
 
+app.use((req, res) => {
+  res.status(404).json({ message: 'The requested URL is not found in server.' });
+});
+
 app.listen(
   process.env.PORT || 3001 ,
   { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },

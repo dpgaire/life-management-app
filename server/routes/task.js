@@ -1,78 +1,104 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
-
 const router = express.Router();
-const taskModel = require("../models/Task");
+const TaskModel = require("../models/Task");
+const verifyToken = require("../middlewares/auth");
 
+// Create a new task
 router.post(
   "/",
-  [body("title", "Title is required").notEmpty()],
+  [
+    body("name", "Task name is required").notEmpty(),
+    body("description", "Task description is required").notEmpty(),
+    body("status", "Task status is required").notEmpty(),
+    body("category_ids").custom((value) => {
+      if (!Array.isArray(value) || value.length === 0) {
+        throw new Error("Category IDs must be an array and cannot be empty");
+      }
+      return true;
+    }),
+  ],
+  verifyToken,
   async (req, res) => {
-    const { title, completed } = req.body;
-    const userId = req.userId; // Get the user ID from the middleware
+    const { name, description, status, category_ids } = req.body;
+    const user_id = req.userId; // Get the user ID from the token
 
-    // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
     try {
-      const newTask = await taskModel.createTask(title, completed, userId); // Pass the user ID to the model function
+      const newTask = await TaskModel.createTask(
+        name,
+        description,
+        status,
+        user_id,
+        category_ids
+      );
       res.status(201).json(newTask);
     } catch (error) {
+      console.error(error);
       res.status(500).json({ error_message: "Error creating task" });
     }
   }
 );
 
-router.get("/", async (req, res) => {
-  const user_id = req.userId; // Use the user ID from the token
+// Get tasks for a specific user
+router.get("/", verifyToken, async (req, res) => {
+  const user_id = req.userId; // Get the user ID from the token
+
   try {
-    const tasks = await taskModel.getTasks(user_id);
-    if (tasks.length < 1) {
-      res.status(200).json({ tasks: [], message: "Tasks not found!" });
-    } else {
-      res.status(200).json({ tasks: tasks, message: null });
-    }
+    const tasks = await TaskModel.getTasks(user_id);
+    res.status(200).json(tasks);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error_message: "Error fetching tasks" });
   }
 });
 
-router.put("/:id", async (req, res) => {
+// Update a task
+router.put("/:id", verifyToken, async (req, res) => {
   const id = parseInt(req.params.id);
-  const { title, completed } = req.body;
-  const user_id = req.userId; // Use the user ID from the token
+  const { name, description, status, category_ids } = req.body;
+  const user_id = req.userId; // Get the user ID from the token
+
   try {
-    const updatedTask = await taskModel.updateTask(
+    const updatedTask = await TaskModel.updateTask(
       id,
-      title,
-      completed,
-      user_id
+      name,
+      description,
+      status,
+      user_id,
+      category_ids
     );
+
     if (!updatedTask) {
       res.status(404).json({ error_message: "Task not found" });
     } else {
       res.status(200).json(updatedTask);
     }
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error_message: "Error updating task" });
   }
 });
 
-router.delete("/:id", async (req, res) => {
+// Delete a task
+router.delete("/:id", verifyToken, async (req, res) => {
   const id = parseInt(req.params.id);
-  const user_id = req.userId; // Use the user ID from the token
+  const user_id = req.userId; // Get the user ID from the token
+
   try {
-    const deletedTask = await taskModel.deleteTask(id, user_id);
+    const deletedTask = await TaskModel.deleteTask(id, user_id);
     if (!deletedTask) {
-      res.status(404).json({ message: "Task not found" });
+      res.status(404).json({ error_message: "Task not found" });
     } else {
-      res.status(204).send({message: "Task deleted successfully"});
+      res.status(200).json({ message: "Task deleted successfully" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Error deleting task" });
+    console.error(error);
+    res.status(500).json({ error_message: "Error deleting task" });
   }
 });
 
