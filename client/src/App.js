@@ -1,10 +1,6 @@
-import React, { useEffect } from "react";
-import { Container, Paper } from "@mui/material";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-} from "react-router-dom";
+import React from "react";
+import { Container } from "@mui/material";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import {
   Categories,
   Expenses,
@@ -17,14 +13,13 @@ import {
 } from "./pages";
 import NotFound from "./components/NotFound";
 import Auth from "./components/Auth/Auth";
-import Navbar from "./components/Navbar";
+import Layout from "./components/UI/Layout";
+// import Navbar from "./components/Navbar";
 
 function App() {
-  const user = null;
   return (
     <Router>
-      <Container maxWidth="xl">
-        <Navbar />
+      <Layout>
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -37,7 +32,7 @@ function App() {
           <Route path="/auth" exact element={<Auth />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </Container>
+      </Layout>
     </Router>
   );
 }
