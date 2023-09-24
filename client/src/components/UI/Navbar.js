@@ -6,10 +6,9 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const navigate = useNavigate();
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -26,12 +25,13 @@ const Navbar = () => {
           <Typography
             variant="h6"
             component="div"
-            onClick={() => navigate("/")}
             sx={{ flexGrow: 1, cursor: "pointer" }}
           >
-            LMA
+            <Button component={Link} to="/" color="inherit">
+              LifeMngApp
+            </Button>
           </Typography>
-          <Button onClick={() => navigate("/auth")} color="inherit">
+          <Button component={Link} to="/auth" color="inherit">
             Login
           </Button>
         </Toolbar>

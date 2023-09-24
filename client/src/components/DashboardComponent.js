@@ -1,161 +1,208 @@
 import {
-  Card,
-  CardContent,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
   Grid,
+  Box,
+  Button,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import {  useNavigate } from "react-router-dom";
+import React from "react";
+import Search from "./UI/Search";
+import NoteCard from "./UI/NoteCard";
+import { Link } from "react-router-dom";
+import TaskCard from "./UI/TaskCard";
+import ExpenseCard from "./UI/ExpenseCard";
+import Navbar from "./UI/Navbar";
+
+
+let itemData = [
+  {
+    title: "How To Enjoy Your Life",
+    content:
+      " Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica",
+  },
+  {
+    title: "How To Enjoy Your Life",
+    content:
+      " Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica",
+  },
+  {
+    title: "How To Enjoy Your Life",
+    content:
+      " Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica",
+  },
+];
+let expenseData = [
+  {
+    item: "Halmet",
+    price: "2000",
+  },
+  {
+    item: "Rain Coat",
+    price: "3000",
+  },
+  {
+    item: "Paint",
+    price: "1600",
+  },
+];
+
+let taskData = [
+  {
+    name: "Develop the Card ",
+    description:
+      " Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica",
+    categories: ["MyProject", "Category 2"],
+    date: "September 2 2023",
+    status: "ToDo",
+  },
+  {
+    name: "Develop the Card ",
+    description:
+      " Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica",
+    categories: ["MyProject", "Category 2"],
+    date: "September 4 2023",
+    status: "Done",
+  },
+  {
+    name: "Develop the Card ",
+    description:
+      " Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica",
+    categories: ["MyProject", "Category 2"],
+    date: "September 6 2023",
+    status: "OnGoing",
+  },
+];
 
 const DashboardComponent = () => {
-  const [tasks, setTasks] = useState([]);
-  const [expenses, setExpenses] = useState([]);
-  const [notes, setNotes] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const token = useSelector((state) => state.auth.token);
-  const navigate = useNavigate();
-
-
-
-  useEffect(() => {
-    if (token) {
-      const headers = {
-        Authorization: token,
-        "Content-Type": "application/json",
-      };
-      // Fetch tasks data
-      fetch("http://localhost:3002/api/tasks", { headers })
-        .then((response) => response.json())
-        .then((data) => setTasks(data))
-        .catch((error) => console.error("Error fetching tasks:", error));
-
-      // Fetch expenses data
-      fetch("http://localhost:3002/api/expenses", { headers })
-        .then((response) => response.json())
-        .then((data) => setExpenses(data))
-        .catch((error) => console.error("Error fetching expenses:", error));
-
-      // Fetch notes data
-      fetch("http://localhost:3002/api/notes", { headers })
-        .then((response) => response.json())
-        .then((data) => setNotes(data))
-        .catch((error) => console.error("Error fetching notes:", error));
-
-      // Fetch categories data
-      fetch("http://localhost:3002/api/categories", { headers })
-        .then((response) => response.json())
-        .then((data) => setCategories(data))
-        .catch((error) => console.error("Error fetching categories:", error));
-    }
-  }, [token]);
-
   return (
     <div>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          <Card sx={{ minWidth: 275, marginBottom: 5 }}>
-            <CardContent>
-              <Typography
-                sx={{ fontSize: 14 }}
-                color="text.secondary"
-                gutterBottom
-              >
-                All the Records of your daily activities
-              </Typography>
-              <Typography variant="h5" component="div">
-                Tasks
-              </Typography>
-              {/* <List>
-                {tasks?.map((task) => (
-                  <ListItem key={task.id}>
-                    <ListItemText primary={task?.title} />
-                  </ListItem>
-                ))}
-              </List> */}
-            </CardContent>
-          </Card>
+      <Navbar />
+      <Grid container spacing={2} sx={{ marginTop: "10px" }}>
+        <Grid item xs={2}>
+          <Box sx={{ backgroundColor: "#F1F2F3", height: "100%" }}>
+            <Grid container spacing={1}>
+            <Grid item xs={12}>
+                <Button
+                  sx={{ width: "100%", textAlign: "center" }}
+                  component={Link}
+                  to="/dashboard"
+                  color="inherit"
+                >
+                  Dashboard
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  sx={{ width: "100%", textAlign: "center" }}
+                  component={Link}
+                  to="/tasks"
+                  color="inherit"
+                >
+                  Tasks
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  sx={{ width: "100%", textAlign: "center" }}
+                  component={Link}
+                  to="/expenses"
+                  color="inherit"
+                >
+                  Expenses
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  sx={{ width: "100%", textAlign: "center" }}
+                  component={Link}
+                  to="/notes"
+                  color="inherit"
+                >
+                  Notes
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  sx={{ width: "100%", textAlign: "center" }}
+                  component={Link}
+                  to="/categories"
+                  color="inherit"
+                >
+                  Categories
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Card sx={{ minWidth: 275, marginBottom: 5 }}>
-            <CardContent>
-              <Typography
-                sx={{ fontSize: 14 }}
-                color="text.secondary"
-                gutterBottom
-              >
-                All the Records of your daily activities
-              </Typography>
-              <Typography variant="h5" component="div">
-                Expenses
-              </Typography>
-              <List>
-                {expenses?.map((expense) => (
-                  <ListItem key={expense.id}>
-                    <ListItemText
-                      primary={`${expense.item} - $${expense.amount}`}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
+        <Grid item xs={10}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Search />
+            </Grid>
+          </Grid>
+          <Box style={{ margin: "10px 0", padding: "10px" }}>
+            <Grid container spacing={3}>
+            {/* <Typography variant="h6">Notes</Typography> */}
+              {itemData.map((item, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
+                  <NoteCard title={item.title} content={item.content} />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+          <Box style={{ margin: "10px 0", padding: "10px" }}>
+            <Grid container spacing={3}>
+            {/* <Typography variant="h6">Notes</Typography> */}
+            {expenseData.map((expense, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
+                  <ExpenseCard item={expense.item} price={expense.price} />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+          <Box style={{ padding: "20px", marginTop: "20px" }}>
+            <Grid container spacing={6}>
+            {taskData.map((item, index) => (
+              <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
+                <TaskCard
+                  name={item.name}
+                  description={item.description}
+                  categories={item.categories}
+                  date={item.date}
+                  status={item.status}
+                />
+              </Grid>
+            ))}
+            </Grid>
+          </Box>
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          <Card sx={{ minWidth: 275, marginBottom: 5 }}>
-            <CardContent>
-              <Typography
-                sx={{ fontSize: 14 }}
-                color="text.secondary"
-                gutterBottom
-              >
-                All the Records of your daily activities
-              </Typography>
-              <Typography variant="h5" component="div">
-                Notes
-              </Typography>
-              <List>
-                {notes?.map((note) => (
-                  <ListItem key={note.id}>
-                    <ListItemText
-                      primary={note.title}
-                      secondary={note.content}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
+      {/* <Grid
+        container
+        sx={{
+          backgroundColor: "#F3F6F9",
+          borderRadius: "10px",
+          padding: "20px",
+          position: "relative",
+        }}
+      >
+        <Grid item xs={12}>
+          <SideNavBar />
+          <Grid container spacing={2}>
+            <Grid item xs={10}>
+              <Search />
+            </Grid>
+            <Grid item xs={2}>
+              <Buttons
+                text="Add Note"
+                variant={"contained"}
+                color="success"
+                Icon={<AddIcon />}
+                isLoading={false}
+              />
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Card sx={{ minWidth: 275, marginBottom: 5 }}>
-            <CardContent>
-              <Typography
-                sx={{ fontSize: 14 }}
-                color="text.secondary"
-                gutterBottom
-              >
-                All the Records of your daily activities
-              </Typography>
-              <Typography variant="h5" component="div">
-                Categories
-              </Typography>
-              <List>
-                {categories?.map((note) => (
-                  <ListItem key={note.id}>
-                    <ListItemText primary={note.name} />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      </Grid> */}
+      {/* </Container> */}
     </div>
   );
 };

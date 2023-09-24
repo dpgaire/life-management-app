@@ -8,16 +8,26 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-const ItemCard = ({ title, content }) => {
+const TaskCard = ({ name, description, status,date }) => {
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {title}
+          {name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {content}
+          {description}
         </Typography>
+      </CardContent>
+      <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
+        {/* <CardActions > */}
+        <Typography gutterBottom variant="body2" component="div">
+          {status}
+        </Typography>
+        <Typography gutterBottom variant="body2" component="div">
+          {date}
+        </Typography>
+        {/* </CardActions> */}
       </CardContent>
       <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
         <Buttons isIconOnly Icon={<DeleteIcon />} />
@@ -28,4 +38,4 @@ const ItemCard = ({ title, content }) => {
   );
 };
 
-export default ItemCard;
+export default TaskCard;

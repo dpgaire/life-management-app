@@ -8,15 +8,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-const ItemCard = ({ title, content }) => {
+const ExpenseCard = ({ item, price }) => {
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {title}
+          {item}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {content}
+          Rs.{price}
         </Typography>
       </CardContent>
       <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -28,4 +28,4 @@ const ItemCard = ({ title, content }) => {
   );
 };
 
-export default ItemCard;
+export default ExpenseCard;

@@ -21,6 +21,7 @@ const Buttons = ({
         </IconButton>
       ) : (
         <Button
+          sx={{ width: "100%" }}
           onClick={handleClick}
           variant={variant}
           color={color || "primary"}

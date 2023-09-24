@@ -1,13 +1,8 @@
-import React from 'react'
-import TaskComponent from '../components/TaskComponent'
-import { Container } from '@mui/material'
+import React from "react";
+import TaskComponent from "../components/TaskComponent";
 
 const Tasks = () => {
-  return (
-    <Container sx={{ marginTop: "20px", padding: "20px" }}>
-    <TaskComponent />
-  </Container>
-  )
-}
+  return <TaskComponent />;
+};
 
-export default Tasks
+export default Tasks;

@@ -1,13 +1,8 @@
-import { Container } from '@mui/material'
-import React from 'react'
-import ExpensesComponent from '../components/ExpensesComponent'
+import React from "react";
+import ExpensesComponent from "../components/ExpensesComponent";
 
 const Expenses = () => {
-  return (
-    <Container sx={{ marginTop: "20px", padding: "20px" }}>
-      <ExpensesComponent />
-    </Container>
-  )
-}
+  return <ExpensesComponent />;
+};
 
-export default Expenses
+export default Expenses;

@@ -8,7 +8,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-const ItemCard = ({ title, content }) => {
+const NoteCard = ({ title, content }) => {
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardContent>
@@ -28,4 +28,4 @@ const ItemCard = ({ title, content }) => {
   );
 };
 
-export default ItemCard;
+export default NoteCard;
