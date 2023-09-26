@@ -7,6 +7,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 const DynamicField = ({
   name,
   handleChange,
+  value,
   label,
   half,
   autoFocus,
@@ -24,6 +25,7 @@ const DynamicField = ({
         fullWidth
         label={label}
         autoFocus={autoFocus}
+        value={value}
         helperText={isError && "Field is required."}
         type={type}
         autoComplete="off"

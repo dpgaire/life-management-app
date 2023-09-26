@@ -6,9 +6,15 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const userToken = localStorage.getItem("profile");
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("profile");
+    navigate("/auth");
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -31,9 +37,18 @@ const Navbar = () => {
               LifeMngApp
             </Button>
           </Typography>
-          <Button component={Link} to="/auth" color="inherit">
-            Login
-          </Button>
+          {userToken ? (
+            <Button
+              onClick={handleLogout}
+              color="inherit"
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button component={Link} to="/auth" color="inherit">
+              Login
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </Box>

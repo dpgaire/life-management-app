@@ -16,7 +16,7 @@ const Buttons = ({
   return (
     <div>
       {isIconOnly ? (
-        <IconButton aria-label="icon-button" onClick={handleClick}>
+        <IconButton aria-label="icon-button" onClick={() => handleClick()}>
           {isLoading ? <CircularProgress size={24} /> : Icon || ""}
         </IconButton>
       ) : (

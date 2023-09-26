@@ -1,72 +1,152 @@
-import React from "react";
-import {
-  Button,
-  Grid,
-  Box,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Button, Grid, Box, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Navbar from "./UI/Navbar";
 import { Link } from "react-router-dom";
 import Search from "./UI/Search";
 import Buttons from "./UI/Button";
 import ExpenseCard from "./UI/ExpenseCard";
-
-let expenseData = [
-  {
-    item: "Halmet",
-    price: "2000",
-  },
-  {
-    item: "Rain Coat",
-    price: "3000",
-  },
-  {
-    item: "Paint",
-    price: "1600",
-  },
-  {
-    item: "Halmet",
-    price: "2000",
-  },
-  {
-    item: "Rain Coat",
-    price: "3000",
-  },
-  {
-    item: "Paint",
-    price: "1600",
-  },
-  {
-    item: "Halmet",
-    price: "2000",
-  },
-  {
-    item: "Rain Coat",
-    price: "3000",
-  },
-  {
-    item: "Paint",
-    price: "1600",
-  },
-  {
-    item: "Halmet",
-    price: "2000",
-  },
-  {
-    item: "Rain Coat",
-    price: "3000",
-  },
-  {
-    item: "Paint",
-    price: "1600",
-  },
-];
+import DynamicModal from "./UI/DynamicModal";
+import Form from "./UI/Form";
 
 const ExpenseComponent = () => {
- 
+  const [expenses, setExpenses] = useState([]);
+  const [isAddModal, setIsAddModal] = useState(false);
+  const [isEditModal, setIsEditModal] = useState(false);
+
+  const [form, setForm] = useState({});
+
+  const userToken = localStorage.getItem("profile");
+
+  const fetchExpenses = async () => {
+    try {
+      const response = await fetch("http://localhost:3002/api/expenses", {
+        headers: {
+          Authorization: "Bearer " + JSON.parse(userToken).token,
+          "Content-Type": "application/json",
+          userId: JSON.parse(userToken).token,
+        },
+      });
+      const data = await response.json();
+      setExpenses(data);
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+    }
+  };
+
+  const handleAddExpense = async (data) => {
+    try {
+      const response = await fetch("http://localhost:3002/api/expenses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + JSON.parse(userToken).token,
+        },
+        body: JSON.stringify({
+          ...data,
+          category_ids: [1],
+        }),
+      });
+      if (response.status === 201) {
+        setForm({});
+        fetchExpenses();
+        setIsAddModal(false);
+      } else {
+        console.error("Error adding expense");
+      }
+    } catch (error) {
+      console.error("Error adding expense:", error);
+    }
+  };
+
+  const handleUpdateExpense = async (data) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3002/api/expenses/${data.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + JSON.parse(userToken).token,
+          },
+          body: JSON.stringify({
+            ...data,
+            category_ids: data.categories.map((item) => item.id),
+          }),
+        }
+      );
+
+      if (response.status === 200) {
+        fetchExpenses();
+        setIsEditModal(false)
+      } else {
+        console.error("Error updating expense");
+      }
+    } catch (error) {
+      console.error("Error updating expense:", error);
+    }
+  };
+
+  const handleEditExpense = async (data) => {
+    handleUpdateExpense(data);
+
+  };
+
+  const handleDeleteExpense = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3002/api/expenses/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + JSON.parse(userToken).token,
+        },
+      });
+
+      if (response.status === 200) {
+        fetchExpenses();
+      } else {
+        console.error("Error deleting expense");
+      }
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userToken) {
+      fetchExpenses();
+    }
+  }, []);
+
+  const handleClick = () => {
+    setIsAddModal(true);
+  };
+
+  const handleDelete = (id) => {
+    handleDeleteExpense(id);
+  };
+
+  const handleUpdate = (id) => {
+    setIsEditModal(true);
+    const filterData = expenses.find((item) => item.id === id);
+    setForm(filterData);    
+  };
+
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+
+    // Iterate through the items and add their prices to totalPrice
+    expenses.forEach((item) => {
+      totalPrice += parseFloat(item.price);
+    });
+
+    // Return the total price
+    return totalPrice.toFixed(2); // Round to 2 decimal places
+  };
+
   return (
     <div>
       <Navbar />
+
       <Grid container spacing={2} sx={{ marginTop: "10px" }}>
         <Grid item xs={2}>
           <Box sx={{ backgroundColor: "#F1F2F3", height: "100%" }}>
@@ -137,22 +217,83 @@ const ExpenseComponent = () => {
                 color="success"
                 Icon={<AddIcon />}
                 isLoading={false}
+                handleClick={handleClick}
               />
             </Grid>
           </Grid>
+          {/* Add Expense */}
+          <DynamicModal
+            open={isAddModal}
+            setIsOpen={setIsAddModal}
+            title={"Add Expense"}
+          >
+            <Form
+              fields={fields}
+              submitText={"Add Expense"}
+              onSubmit={(data) => {
+                handleAddExpense(data);
+              }}
+            />
+          </DynamicModal>
+          {/* Edit Expense */}
+          <DynamicModal
+            open={isEditModal}
+            setIsOpen={setIsEditModal}
+            title={"Edit Expense"}
+          >
+            <Form
+              fields={fields}
+              submitText={"Edit Expense"}
+              initialState={form}
+              onSubmit={(data) => {
+                handleEditExpense(data);
+              }}
+            />
+          </DynamicModal>
           <Box style={{ margin: "10px 0", padding: "10px" }}>
             <Grid container spacing={3}>
-              {expenseData.map((expense, index) => (
+              {expenses?.map((expense, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
-                  <ExpenseCard item={expense.item} price={expense.price} />
+                  <ExpenseCard
+                    item={expense.item}
+                    price={expense.price}
+                    id={expense.id}
+                    quantity={expense.quantity}
+                    created_at={expense.created_at}
+                    handleDelete={handleDelete}
+                    handleUpdate={handleUpdate}
+                  />
                 </Grid>
               ))}
             </Grid>
           </Box>
         </Grid>
       </Grid>
+      <div style={{ textAlign: "center" }}>
+        <Typography variant="h3" xs={{ textAlign: "center" }}>
+          Total Expense: Rs.{calculateTotalPrice()}
+        </Typography>
+      </div>
     </div>
   );
 };
 
 export default ExpenseComponent;
+
+const fields = [
+  {
+    name: "item",
+    label: "Item",
+    type: "text",
+  },
+  {
+    name: "price",
+    label: "Price",
+    type: "text",
+  },
+  {
+    name: "quantity",
+    label: "Quantity",
+    type: "text",
+  },
+];

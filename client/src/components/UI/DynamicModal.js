@@ -3,6 +3,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import CloseIcon from "@mui/icons-material/Close";
 
 const customModalStyle = {
   position: "absolute",
@@ -17,28 +18,33 @@ const customModalStyle = {
   p: 4,
 };
 
-const DynamicModal = ({ open, onClose, title, children }) => {
+const DynamicModal = ({ open, setIsOpen, title, children }) => {
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
     >
-      <Box sx={{ ...customModalStyle, maxHeight: "90%" }}>
+      <Box sx={{ ...customModalStyle, maxHeight: "90%", position: "relative" }}>
         <Typography variant="h5" id="modal-title" gutterBottom>
           {title}
         </Typography>
-        <Typography id="modal-description" gutterBottom>
-          {children}
-        </Typography>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={onClose}
-        >
-          Close
-        </Button>
+        <CloseIcon
+          onClick={handleClose}
+          sx={{
+            position: "absolute",
+            top: "8px",
+            right: "8px",
+            cursor: "pointer",
+          }}
+        />
+        <Box>{children}</Box>
       </Box>
     </Modal>
   );
