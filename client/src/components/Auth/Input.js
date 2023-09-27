@@ -13,12 +13,13 @@ const DynamicField = ({
   autoFocus,
   type,
   handleShowPassword,
-  isError,
+  error,
+  errorMessage,
 }) => {
   return (
     <Grid item xs={12} sm={half ? 6 : 12}>
       <TextField
-        error={isError}
+        error={error}
         name={name}
         onChange={(e) => handleChange(e, name)}
         variant="outlined"
@@ -26,7 +27,7 @@ const DynamicField = ({
         label={label}
         autoFocus={autoFocus}
         value={value}
-        helperText={isError && "Field is required."}
+        helperText={errorMessage}
         type={type}
         autoComplete="off"
         InputProps={

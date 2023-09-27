@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Button, Grid, Box, Typography } from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
+import { Button, Grid, Box, Typography, Alert } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Navbar from "./UI/Navbar";
 import { Link } from "react-router-dom";
@@ -7,12 +7,15 @@ import Search from "./UI/Search";
 import Buttons from "./UI/Button";
 import ExpenseCard from "./UI/ExpenseCard";
 import DynamicModal from "./UI/DynamicModal";
+import IconDelete from "@mui/icons-material/Delete";
 import Form from "./UI/Form";
 
 const ExpenseComponent = () => {
   const [expenses, setExpenses] = useState([]);
   const [isAddModal, setIsAddModal] = useState(false);
   const [isEditModal, setIsEditModal] = useState(false);
+  const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const [form, setForm] = useState({});
 
@@ -78,7 +81,7 @@ const ExpenseComponent = () => {
 
       if (response.status === 200) {
         fetchExpenses();
-        setIsEditModal(false)
+        setIsEditModal(false);
       } else {
         console.error("Error updating expense");
       }
@@ -89,7 +92,6 @@ const ExpenseComponent = () => {
 
   const handleEditExpense = async (data) => {
     handleUpdateExpense(data);
-
   };
 
   const handleDeleteExpense = async (id) => {
@@ -103,6 +105,8 @@ const ExpenseComponent = () => {
 
       if (response.status === 200) {
         fetchExpenses();
+        setIsDeleteModal(false);
+        setDeleteId(null);
       } else {
         console.error("Error deleting expense");
       }
@@ -122,26 +126,25 @@ const ExpenseComponent = () => {
   };
 
   const handleDelete = (id) => {
-    handleDeleteExpense(id);
+    setDeleteId(id);
+    setIsDeleteModal(true);
+    // handleDeleteExpense(id)
   };
 
   const handleUpdate = (id) => {
     setIsEditModal(true);
     const filterData = expenses.find((item) => item.id === id);
-    setForm(filterData);    
+    setForm(filterData);
   };
 
-  const calculateTotalPrice = () => {
+  // Calculate the total price using useMemo
+  const calculateTotalPrice = useMemo(() => {
     let totalPrice = 0;
-
-    // Iterate through the items and add their prices to totalPrice
     expenses.forEach((item) => {
       totalPrice += parseFloat(item.price);
     });
-
-    // Return the total price
-    return totalPrice.toFixed(2); // Round to 2 decimal places
-  };
+    return totalPrice.toFixed(2);
+  }, [expenses]);
 
   return (
     <div>
@@ -226,6 +229,7 @@ const ExpenseComponent = () => {
             open={isAddModal}
             setIsOpen={setIsAddModal}
             title={"Add Expense"}
+            isCloseIcon
           >
             <Form
               fields={fields}
@@ -240,15 +244,56 @@ const ExpenseComponent = () => {
             open={isEditModal}
             setIsOpen={setIsEditModal}
             title={"Edit Expense"}
+            isCloseIcon
           >
             <Form
               fields={fields}
               submitText={"Edit Expense"}
               initialState={form}
               onSubmit={(data) => {
+                console.log('data', data);
                 handleEditExpense(data);
               }}
             />
+          </DynamicModal>
+          {/* Delete Expense */}
+          <DynamicModal
+            open={isDeleteModal}
+            setIsOpen={setIsDeleteModal}
+            title={"Delete Expense"}
+          >
+            <Alert
+              severity="warning"
+              sx={{ fontSize: "18px", marginTop: "10px", padding: "10px" }}
+            >
+              Are you sure you want to delete?
+            </Alert>
+            <Box
+              sx={{
+                display: "flex",
+                gap: "10px",
+                justifyContent: "flex-end",
+                marginTop: "20px",
+              }}
+            >
+              <Buttons
+                handleClick={() => handleDeleteExpense(deleteId)}
+                text={"Delete"}
+                variant="contained"
+                color="error"
+                type={"submit"}
+                Icon={<IconDelete />}
+              >
+                Delete
+              </Buttons>
+              <Button
+                variant="contained"
+                type={"button"}
+                onClick={() => setIsDeleteModal(false)}
+              >
+                Cancel
+              </Button>
+            </Box>
           </DynamicModal>
           <Box style={{ margin: "10px 0", padding: "10px" }}>
             <Grid container spacing={3}>
@@ -271,7 +316,7 @@ const ExpenseComponent = () => {
       </Grid>
       <div style={{ textAlign: "center" }}>
         <Typography variant="h3" xs={{ textAlign: "center" }}>
-          Total Expense: Rs.{calculateTotalPrice()}
+          Total Expense: Rs.{calculateTotalPrice}
         </Typography>
       </div>
     </div>

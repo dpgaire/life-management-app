@@ -18,8 +18,7 @@ const customModalStyle = {
   p: 4,
 };
 
-const DynamicModal = ({ open, setIsOpen, title, children }) => {
-
+const DynamicModal = ({ open, setIsOpen, title, children, isCloseIcon }) => {
   const handleClose = () => {
     setIsOpen(false);
   };
@@ -35,15 +34,17 @@ const DynamicModal = ({ open, setIsOpen, title, children }) => {
         <Typography variant="h5" id="modal-title" gutterBottom>
           {title}
         </Typography>
-        <CloseIcon
-          onClick={handleClose}
-          sx={{
-            position: "absolute",
-            top: "8px",
-            right: "8px",
-            cursor: "pointer",
-          }}
-        />
+        {isCloseIcon && (
+          <CloseIcon
+            onClick={handleClose}
+            sx={{
+              position: "absolute",
+              top: "8px",
+              right: "8px",
+              cursor: "pointer",
+            }}
+          />
+        )}
         <Box>{children}</Box>
       </Box>
     </Modal>
